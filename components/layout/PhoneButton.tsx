@@ -6,9 +6,10 @@ import { cn } from "@/lib/cn";
 type PhoneButtonProps = {
   className?: string;
   onClick?: () => void;
+  label?: string;
 };
 
-export default function PhoneButton({ className, onClick }: PhoneButtonProps) {
+export default function PhoneButton({ className, onClick, label }: PhoneButtonProps) {
   return (
     <a
       href={siteConfig.phoneHref}
@@ -20,7 +21,7 @@ export default function PhoneButton({ className, onClick }: PhoneButtonProps) {
       )}
     >
       <Phone size={15} strokeWidth={1.75} />
-      <span className="whitespace-nowrap">{siteConfig.phone}</span>
+      <span className="whitespace-nowrap">{label ?? siteConfig.phone}</span>
     </a>
   );
 }
