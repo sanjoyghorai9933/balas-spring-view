@@ -69,7 +69,7 @@ export default function RoomCard({ room, variants }: RoomCardProps) {
             View Details
           </a>
           <a
-            href={room.href}
+            href={`/book-now?room=${encodeURIComponent(room.slug)}`}
             className="inline-flex flex-1 items-center justify-center rounded-sm bg-[#C9A24A] px-4 py-3 font-body text-[11px] font-medium uppercase tracking-[0.18em] text-[#0E141B] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#d9b563] hover:shadow-[0_10px_30px_rgba(201,162,74,0.4)]"
           >
             Book Now
