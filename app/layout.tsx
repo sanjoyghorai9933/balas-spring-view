@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Jost } from "next/font/google";
 
+import FloatingWhatsAppButton from "@/components/layout/FloatingWhatsAppButton";
 import { siteConfig } from "@/data/site";
 
 import "./globals.css";
@@ -56,7 +57,10 @@ export default function RootLayout({
       lang="en"
       className={`${cormorant.variable} ${jost.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <FloatingWhatsAppButton />
+      </body>
     </html>
   );
 }
