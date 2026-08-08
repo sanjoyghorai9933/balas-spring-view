@@ -35,8 +35,15 @@ export default function Navbar() {
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
 
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMobileOpen(false);
+    };
+
+    if (mobileOpen) window.addEventListener("keydown", onKeyDown);
+
     return () => {
       document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKeyDown);
     };
   }, [mobileOpen]);
 
@@ -81,8 +88,8 @@ export default function Navbar() {
 
       <div
         className={cn(
-          "overflow-hidden border-t border-[#F8F8F5]/5 bg-[#0F1720]/95 backdrop-blur-md transition-all duration-500 xl:hidden",
-          mobileOpen ? "max-h-[36rem] opacity-100" : "max-h-0 opacity-0",
+          "max-h-[calc(100vh-6rem)] overflow-x-hidden overflow-y-auto overscroll-contain border-t border-[#F8F8F5]/5 bg-[#0F1720]/95 backdrop-blur-md transition-all duration-500 xl:hidden",
+          mobileOpen ? "max-h-[calc(100vh-6rem)] opacity-100" : "max-h-0 opacity-0",
         )}
       >
         <ul className="flex flex-col gap-6 px-6 py-8">
