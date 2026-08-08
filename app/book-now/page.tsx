@@ -1,5 +1,6 @@
 import { Home, MessageCircle, Receipt, ShieldCheck } from "lucide-react";
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 import BookingExperience from "@/components/booking/BookingExperience";
 import Footer from "@/components/layout/Footer";
@@ -49,7 +50,9 @@ export default function BookNowPage() {
       />
 
       {/* BOOKING LAYOUT + PRICE ESTIMATE */}
-      <BookingExperience />
+      <Suspense fallback={null}>
+        <BookingExperience />
+      </Suspense>
 
       {/* PAYMENT INFO */}
       <section className="bg-[#F8F6F2] px-6 py-20 sm:px-10">
