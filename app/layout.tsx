@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Jost } from "next/font/google";
 
 import FloatingWhatsAppButton from "@/components/layout/FloatingWhatsAppButton";
@@ -20,6 +20,12 @@ const jost = Jost({
 
 // TODO: replace with the real production domain once available.
 const SITE_URL = "https://balasspringview.com";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
