@@ -70,9 +70,9 @@ export default function Navbar() {
         </ul>
 
         <div className="flex items-center gap-3">
-          <PhoneButton className="hidden lg:inline-flex" />
-          <WhatsAppButton className="hidden lg:inline-flex" />
-          <BookNowButton className="hidden lg:inline-flex" />
+          <PhoneButton className="hidden xl:inline-flex" />
+          <WhatsAppButton className="hidden xl:inline-flex" />
+          <BookNowButton className="hidden xl:inline-flex" />
 
           <button
             type="button"
@@ -88,8 +88,8 @@ export default function Navbar() {
 
       <div
         className={cn(
-          "max-h-[calc(100vh-6rem)] overflow-x-hidden overflow-y-auto overscroll-contain border-t border-[#F8F8F5]/5 bg-[#0F1720]/95 backdrop-blur-md transition-all duration-500 xl:hidden",
-          mobileOpen ? "max-h-[calc(100vh-6rem)] opacity-100" : "max-h-0 opacity-0",
+          "max-h-[calc(100dvh-6rem)] overflow-x-hidden overflow-y-auto overscroll-contain border-t border-[#F8F8F5]/5 bg-[#0F1720]/95 backdrop-blur-md transition-all duration-500 xl:hidden",
+          mobileOpen ? "opacity-100" : "max-h-0 opacity-0",
         )}
       >
         <ul className="flex flex-col gap-6 px-6 py-8">
