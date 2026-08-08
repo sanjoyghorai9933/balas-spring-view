@@ -18,13 +18,15 @@ const jost = Jost({
   weight: ["300", "400", "500"],
 });
 
-// TODO: replace with the real production domain once available.
-const SITE_URL = "https://balasspringview.com";
+const SITE_URL = "https://balasvistahills.com";
+const SITE_DESCRIPTION =
+  "Bala's Spring View by Vista Hills — a premium hillside retreat in Mussoorie, Uttarakhand, with comfortable rooms, scenic views, and a peaceful stay.";
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  themeColor: "#0B0F14",
 };
 
 export const metadata: Metadata = {
@@ -33,22 +35,43 @@ export const metadata: Metadata = {
     default: siteConfig.brand,
     template: `%s | ${siteConfig.brand}`,
   },
-  description:
-    "A premium luxury retreat nestled in the hills — Bala's Spring View by Vista Hills.",
+  description: SITE_DESCRIPTION,
+  keywords: [
+    "Bala's Spring View",
+    "Vista Hills",
+    "Mussoorie hotel",
+    "Mussoorie stay",
+    "hotel in Mussoorie",
+    "Mussoorie Uttarakhand",
+    "hillside retreat Mussoorie",
+  ],
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
   openGraph: {
     title: siteConfig.brand,
-    description:
-      "A premium luxury retreat nestled in the hills — Bala's Spring View by Vista Hills.",
+    description: SITE_DESCRIPTION,
     siteName: siteConfig.brand,
-    images: [{ url: "/images/hero/hero-bg.jpg", width: 1200, height: 630 }],
+    url: SITE_URL,
+    images: [{ url: "/images/hero/hero-bg.jpg", width: 1200, height: 630, alt: siteConfig.brand }],
     locale: "en_IN",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: siteConfig.brand,
-    description:
-      "A premium luxury retreat nestled in the hills — Bala's Spring View by Vista Hills.",
+    description: SITE_DESCRIPTION,
     images: ["/images/hero/hero-bg.jpg"],
   },
 };
