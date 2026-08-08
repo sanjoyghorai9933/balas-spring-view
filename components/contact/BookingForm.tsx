@@ -3,6 +3,8 @@
 import { CheckCircle2 } from "lucide-react";
 import { useRef, useState, type FormEvent } from "react";
 
+import PhoneButton from "@/components/layout/PhoneButton";
+import WhatsAppButton from "@/components/layout/WhatsAppButton";
 import {
   focusFirstInvalidField,
   validateBooking,
@@ -11,10 +13,8 @@ import {
 
 const inputClasses =
   "w-full rounded-lg border border-[#F8F8F5]/15 bg-[#0E141B]/60 px-4 py-3 font-body text-sm text-[#F8F8F5] placeholder:text-[#B9B9B9]/50 transition-colors duration-300 focus:border-[#C9A24A] focus:outline-none focus:ring-1 focus:ring-[#C9A24A]/40";
-
 const labelClasses =
   "mb-2 block font-body text-[11px] font-medium uppercase tracking-[0.18em] text-[#B9B9B9]";
-
 const errorClasses = "mt-1.5 font-body text-xs text-[#F87171]";
 
 type BookingFormProps = {
@@ -71,6 +71,18 @@ export default function BookingForm({
         <p className="mt-2 max-w-xs font-body text-sm font-light text-[#B9B9B9]">
           {footnote}
         </p>
+        <div className="mt-6 grid w-full max-w-md grid-cols-1 gap-3 sm:grid-cols-2">
+          <WhatsAppButton
+            label="WhatsApp Us"
+            variant="solid"
+            message="Hello, I have just submitted an enquiry to Bala's Spring View by Vista Hills. Please help me with my request."
+            className="w-full"
+          />
+          <PhoneButton
+            label="Call Us"
+            className="w-full justify-center border-[#F8F8F5]/25 px-5 py-3 text-xs uppercase tracking-[0.15em]"
+          />
+        </div>
       </div>
     );
   }
