@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import Footer from "@/components/layout/Footer";
+import Navbar from "@/components/layout/Navbar";
 import { siteConfig } from "@/data/site";
 
 const sections = [
@@ -46,6 +48,7 @@ const sections = [
 export default function CancellationPolicyPage() {
   return (
     <main className="min-h-screen bg-[#0B0F14] text-[#F5F1E8]">
+      <Navbar />
       <section className="border-b border-[#C9A24A]/20 bg-[radial-gradient(circle_at_top,#1b2430_0%,#0B0F14_55%)] px-6 pb-16 pt-32 sm:px-10 lg:pb-20">
         <div className="mx-auto max-w-5xl">
           <p className="font-body text-xs font-semibold uppercase tracking-[0.35em] text-[#C9A24A]">
@@ -115,6 +118,7 @@ export default function CancellationPolicyPage() {
           </div>
         </div>
       </section>
+      <Footer />
     </main>
   );
 }
