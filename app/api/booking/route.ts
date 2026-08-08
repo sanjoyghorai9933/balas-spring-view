@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
+import nodemailer from "nodemailer";
 
-const DESTINATION_EMAIL = "info@balasvistahills.com";
+const DESTINATION_EMAIL = process.env.BOOKING_TO || "info@balasvistahills.com";
 
 function escapeHtml(value: string) {
   return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#039;");
@@ -22,11 +23,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Check-out must be after check-in." }, { status: 400 });
     }
 
-    const apiKey = process.env.RESEND_API_KEY;
-    const from = process.env.BOOKING_FROM_EMAIL;
+    const host = process.env.SMTP_HOST;
+    const port = Number(process.env.SMTP_PORT || 465);
+    const user = process.env.SMTP_USER;
+    const password = process.env.SMTP_PASSWORD;
+    const from = process.env.SMTP_FROM || user;
 
-    if (!apiKey || !from) {
-      console.error("Booking email is not configured. Set RESEND_API_KEY and BOOKING_FROM_EMAIL.");
+    if (!host || !user || !password || !from) {
+      console.error("Booking email is not configured. Set SMTP_HOST, SMTP_USER, SMTP_PASSWORD and SMTP_FROM.");
       return NextResponse.json({ error: "Booking email service is not configured yet." }, { status: 503 });
     }
 
@@ -44,29 +48,27 @@ export async function POST(request: Request) {
       ["Special requests", body.specialRequests || "—"],
     ] as const;
 
-    const html = `<div style="font-family:Arial,sans-serif;line-height:1.6;color:#222"><h2>New Booking Enquiry</h2>${fields.map(([label, value]) => `<p><strong>${escapeHtml(label)}:</strong> ${escapeHtml(String(value))}</p>`).join("")}<p style="color:#777;font-size:12px">Submitted from the Balas Vista Hills website.</p></div>`;
+    const html = `<div style="font-family:Arial,sans-serif;line-height:1.6;color:#222"><h2>New Booking Enquiry</h2>${fields.map(([label, value]) => `<p><strong>${escapeHtml(label)}:</strong> ${escapeHtml(String(value))}</p>`).join("")}<p style="color:#777;font-size:12px">Submitted from the Bala's Spring View by Vista Hills website.</p></div>`;
 
-    const response = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        from,
-        to: [DESTINATION_EMAIL],
-        reply_to: body.email,
-        subject: `New booking enquiry — ${body.fullName} — ${body.checkIn}`,
-        html,
-      }),
+    const transporter = nodemailer.createTransport({
+      host,
+      port,
+      secure: port === 465,
+      auth: { user, pass: password },
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Resend booking email failed:", errorText);
-      return NextResponse.json({ error: "We couldn't send your booking request. Please try WhatsApp or email instead." }, { status: 502 });
-    }
+    await transporter.sendMail({
+      from,
+      to: DESTINATION_EMAIL,
+      replyTo: body.email,
+      subject: `New booking enquiry — ${body.fullName} — ${body.checkIn}`,
+      html,
+      text: fields.map(([label, value]) => `${label}: ${String(value)}`).join("\n"),
+    });
 
     return NextResponse.json({ ok: true });
   } catch (error) {
-    console.error("Booking request failed:", error);
-    return NextResponse.json({ error: "Something went wrong. Please try again or contact us directly." }, { status: 500 });
+    console.error("Booking SMTP email failed:", error);
+    return NextResponse.json({ error: "We couldn't send your booking request. Please try WhatsApp or email instead." }, { status: 502 });
   }
 }
