@@ -70,9 +70,9 @@ export default function Navbar() {
         </ul>
 
         <div className="flex items-center gap-3">
-          <PhoneButton className="hidden xl:inline-flex" />
-          <WhatsAppButton className="hidden xl:inline-flex" />
-          <BookNowButton className="hidden xl:inline-flex" />
+          <PhoneButton className="!hidden xl:!inline-flex" />
+          <WhatsAppButton className="!hidden xl:!inline-flex" />
+          <BookNowButton className="!hidden xl:!inline-flex" />
 
           <button
             type="button"
