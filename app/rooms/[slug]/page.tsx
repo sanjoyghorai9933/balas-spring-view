@@ -108,7 +108,7 @@ export default async function RoomDetailPage({
       />
       <div className="flex justify-center bg-[#0F1720] pb-16 sm:pb-20">
         <Link
-          href="/book-now"
+          href={`/book-now?room=${encodeURIComponent(room.slug)}`}
           className="inline-flex items-center justify-center rounded-sm bg-[#C9A24A] px-9 py-4 font-body text-xs font-medium uppercase tracking-[0.25em] text-[#0F1720] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#d9b563] hover:shadow-[0_15px_45px_-10px_rgba(201,162,74,0.55)] sm:text-sm"
         >
           Book Now
@@ -200,7 +200,7 @@ export default async function RoomDetailPage({
                 </p>
 
                 <Link
-                  href="/book-now"
+                  href={`/book-now?room=${encodeURIComponent(room.slug)}`}
                   className="mt-6 flex w-full items-center justify-center rounded-sm bg-[#C9A24A] px-6 py-3.5 font-body text-xs font-medium uppercase tracking-[0.2em] text-[#0E141B] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#d9b563] hover:shadow-[0_15px_40px_-10px_rgba(201,162,74,0.5)]"
                 >
                   Book Now
