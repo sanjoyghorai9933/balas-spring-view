@@ -5,6 +5,8 @@ import { Check, CheckCircle2, Clock, Mail, MapPin, Star } from "lucide-react";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useSearchParams } from "next/navigation";
 
+import PhoneButton from "@/components/layout/PhoneButton";
+import WhatsAppButton from "@/components/layout/WhatsAppButton";
 import WhatsAppIcon from "@/components/layout/WhatsAppIcon";
 import { roomsContent } from "@/data/rooms";
 import { siteConfig } from "@/data/site";
@@ -32,6 +34,9 @@ export default function BookingExperience() {
   const [sending, setSending] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submittedName, setSubmittedName] = useState("");
+  const [submittedRoom, setSubmittedRoom] = useState("");
+  const [submittedDates, setSubmittedDates] = useState("");
 
   useEffect(() => {
     const roomParam = searchParams.get("room");
@@ -101,6 +106,9 @@ export default function BookingExperience() {
       });
       const result = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(result.error || "Unable to send your booking request.");
+      setSubmittedName(String(data.get("fullName") ?? ""));
+      setSubmittedRoom(selectedRoom?.category ?? "");
+      setSubmittedDates(`${data.get("checkIn")} to ${data.get("checkOut")}`);
       setSubmitted(true);
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : "Unable to send your booking request.");
@@ -108,6 +116,8 @@ export default function BookingExperience() {
       setSending(false);
     }
   };
+
+  const whatsappMessage = `Hello, I have just submitted a booking enquiry for Bala's Spring View by Vista Hills${submittedName ? ` for ${submittedName}` : ""}${submittedRoom ? ` (${submittedRoom})` : ""}${submittedDates ? `, dates ${submittedDates}` : ""}. Please help me with availability and rates.`;
 
   return (
     <section className="bg-[#0E141B] px-6 py-24 sm:px-10 sm:py-28 lg:py-32">
@@ -128,7 +138,15 @@ export default function BookingExperience() {
 
           <motion.div initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.15 }} transition={{ duration: 0.7, delay: 0.1 }} className="rounded-3xl border border-[#C9A24A]/25 bg-[#111827]/70 p-7 shadow-[0_35px_90px_-30px_rgba(0,0,0,0.65)] backdrop-blur-md sm:p-10">
             {submitted ? (
-              <div className="flex flex-col items-center justify-center py-16 text-center"><div className="flex h-16 w-16 items-center justify-center rounded-full border border-[#C9A24A]/40 bg-[#C9A24A]/10"><CheckCircle2 size={30} className="text-[#C9A24A]" /></div><h3 className="mt-6 font-display text-xl font-light text-[#F8F8F5]">Reservation Request Received</h3><p className="mt-2 max-w-sm font-body text-sm font-light text-[#B9B9B9]">Your enquiry has been sent to our reservations team. We&apos;ll get back to you shortly.</p><div className="mt-6 flex flex-wrap justify-center gap-3"><a href={siteConfig.whatsappHref} target="_blank" rel="noopener noreferrer" className="rounded-sm bg-[#25D366] px-5 py-3 font-body text-xs font-medium uppercase tracking-[0.15em] text-[#0E141B]">WhatsApp Us</a><a href={siteConfig.emailHref} className="rounded-sm border border-[#F8F8F5]/25 px-5 py-3 font-body text-xs font-medium uppercase tracking-[0.15em] text-[#F8F8F5]">Email Us</a></div></div>
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full border border-[#C9A24A]/40 bg-[#C9A24A]/10"><CheckCircle2 size={30} className="text-[#C9A24A]" /></div>
+                <h3 className="mt-6 font-display text-xl font-light text-[#F8F8F5]">Reservation Request Received</h3>
+                <p className="mt-2 max-w-sm font-body text-sm font-light text-[#B9B9B9]">Your enquiry has been sent to our reservations team. We&apos;ll get back to you shortly.</p>
+                <div className="mt-6 grid w-full max-w-md grid-cols-1 gap-3 sm:grid-cols-2">
+                  <WhatsAppButton label="WhatsApp Us" variant="solid" message={whatsappMessage} className="w-full" />
+                  <PhoneButton label="Call Us" className="w-full justify-center border-[#F8F8F5]/25 px-5 py-3 text-xs uppercase tracking-[0.15em]" />
+                </div>
+              </div>
             ) : (
               <form onSubmit={handleSubmit} noValidate className="space-y-5">
                 <div><label htmlFor="fullName" className={labelClasses}>Full Name</label><input id="fullName" name="fullName" required placeholder="Your full name" className={`${inputClasses} ${errors.fullName ? "border-[#F87171]" : ""}`} />{errors.fullName && <p className={errorClasses}>{errors.fullName}</p>}</div>
