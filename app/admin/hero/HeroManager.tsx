@@ -33,6 +33,7 @@ export default function HeroManager() {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [seeding, setSeeding] = useState(false);
   const [message, setMessage] = useState("");
 
   async function load() {
@@ -97,6 +98,22 @@ export default function HeroManager() {
     }
   }
 
+  async function importExisting() {
+    setSeeding(true);
+    setMessage("");
+    try {
+      const response = await fetch("/api/admin/hero/seed", { method: "POST" });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Could not import existing banners.");
+      setMessage(result.message);
+      await load();
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Could not import existing banners.");
+    } finally {
+      setSeeding(false);
+    }
+  }
+
   async function remove(id: number) {
     if (!window.confirm("Delete this banner?")) return;
     const response = await fetch(`/api/admin/hero/${id}`, { method: "DELETE" });
@@ -112,7 +129,10 @@ export default function HeroManager() {
             <h1 className="mt-2 font-[var(--font-cormorant)] text-4xl">Hero & Banners</h1>
             <p className="mt-2 text-sm text-white/50">Upload, edit, enable and reorder homepage hero slides.</p>
           </div>
-          {editingId && <button onClick={reset} className="rounded-lg border border-white/10 px-4 py-2 text-sm">Cancel edit</button>}
+          <div className="flex flex-wrap gap-3">
+            <button type="button" onClick={importExisting} disabled={seeding} className="rounded-lg border border-[#c7a56a]/40 px-4 py-2 text-sm text-[#e2c98f] disabled:opacity-50">{seeding ? "Importing…" : "Import Existing Banners"}</button>
+            {editingId && <button onClick={reset} className="rounded-lg border border-white/10 px-4 py-2 text-sm">Cancel edit</button>}
+          </div>
         </div>
 
         {message && <div className="mb-6 rounded-lg border border-[#c7a56a]/30 bg-[#c7a56a]/10 px-4 py-3 text-sm text-[#e2c98f]">{message}</div>}
@@ -134,7 +154,7 @@ export default function HeroManager() {
 
         <section className="mt-8">
           <h2 className="font-[var(--font-cormorant)] text-2xl">Current Banners</h2>
-          {loading ? <p className="mt-4 text-white/50">Loading…</p> : slides.length === 0 ? <p className="mt-4 text-white/50">No database banners yet. Add your first banner above.</p> : (
+          {loading ? <p className="mt-4 text-white/50">Loading…</p> : slides.length === 0 ? <p className="mt-4 text-white/50">No database banners yet. Use “Import Existing Banners” to bring in the current website banners.</p> : (
             <div className="mt-5 grid gap-5 md:grid-cols-2">
               {slides.map((slide) => (
                 <article key={slide.id} className="overflow-hidden rounded-2xl border border-white/10 bg-[#151311]">
