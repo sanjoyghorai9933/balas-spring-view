@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 const sections = [
@@ -37,16 +37,35 @@ export default function AdminDashboard({ email }: { email: string }) {
   const [data, setData] = useState<DashboardData>(emptyData);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [notification, setNotification] = useState("");
+  const previousNewCount = useRef<number | null>(null);
+
+  async function loadDashboard(initial = false) {
+    try {
+      const response = await fetch("/api/admin/dashboard", { cache: "no-store" });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error || "Could not load dashboard.");
+      const nextData = payload as DashboardData;
+      const nextNewCount = Number(nextData.enquiries?.new_count ?? 0);
+      if (!initial && previousNewCount.current !== null && nextNewCount > previousNewCount.current) {
+        const added = nextNewCount - previousNewCount.current;
+        setNotification(`${added} new ${added === 1 ? "enquiry has" : "enquiries have"} been received.`);
+        window.setTimeout(() => setNotification(""), 7000);
+      }
+      previousNewCount.current = nextNewCount;
+      setData(nextData);
+      setError("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not load dashboard.");
+    } finally {
+      if (initial) setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    fetch("/api/admin/dashboard", { cache: "no-store" })
-      .then(async (response) => {
-        const payload = await response.json();
-        if (!response.ok) throw new Error(payload.error || "Could not load dashboard.");
-        setData(payload);
-      })
-      .catch((err) => setError(err instanceof Error ? err.message : "Could not load dashboard."))
-      .finally(() => setLoading(false));
+    void loadDashboard(true);
+    const timer = window.setInterval(() => void loadDashboard(false), 30000);
+    return () => window.clearInterval(timer);
   }, []);
 
   async function logout() {
@@ -55,8 +74,9 @@ export default function AdminDashboard({ email }: { email: string }) {
     router.refresh();
   }
 
+  const newCount = data.enquiries.new_count ?? 0;
   const stats = [
-    { label: "New enquiries", value: data.enquiries.new_count ?? 0, detail: `${data.enquiries.total ?? 0} total`, href: "/admin/enquiries", urgent: (data.enquiries.new_count ?? 0) > 0 },
+    { label: "New enquiries", value: newCount, detail: `${data.enquiries.total ?? 0} total`, href: "/admin/enquiries", urgent: newCount > 0 },
     { label: "Confirmed", value: data.enquiries.confirmed ?? 0, detail: "Confirmed bookings", href: "/admin/enquiries" },
     { label: "Rooms", value: data.rooms.active ?? 0, detail: `${data.rooms.total ?? 0} total`, href: "/admin/rooms" },
     { label: "Hero banners", value: data.hero.active ?? 0, detail: `${data.hero.total ?? 0} total`, href: "/admin/hero" },
@@ -71,10 +91,11 @@ export default function AdminDashboard({ email }: { email: string }) {
       <header className="border-b border-white/10 bg-[#11100e]">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-5 lg:px-8">
           <div><p className="text-xs uppercase tracking-[0.28em] text-[#c7a56a]">Bala&apos;s Spring View</p><h1 className="mt-1 font-[var(--font-cormorant)] text-3xl">Admin Dashboard</h1></div>
-          <div className="flex items-center gap-3"><span className="hidden text-sm text-white/50 sm:block">{email}</span><button onClick={logout} className="rounded-lg border border-white/10 px-4 py-2 text-sm hover:border-[#c7a56a] hover:text-[#c7a56a]">Logout</button></div>
+          <div className="flex items-center gap-3"><Link href="/admin/enquiries" aria-label={newCount ? `${newCount} new enquiries` : "Enquiries"} className="relative rounded-lg border border-white/10 px-4 py-2 text-sm hover:border-[#c7a56a] hover:text-[#c7a56a]">Enquiries{newCount > 0 && <span className="absolute -right-2 -top-2 min-w-5 rounded-full bg-[#c7a56a] px-1.5 py-0.5 text-center text-[10px] font-bold text-[#17130d]">{newCount > 99 ? "99+" : newCount}</span>}</Link><span className="hidden text-sm text-white/50 sm:block">{email}</span><button onClick={logout} className="rounded-lg border border-white/10 px-4 py-2 text-sm hover:border-[#c7a56a] hover:text-[#c7a56a]">Logout</button></div>
         </div>
       </header>
       <section className="mx-auto max-w-7xl px-5 py-8 lg:px-8">
+        {notification && <div className="mb-5 flex items-center justify-between gap-4 rounded-xl border border-[#c7a56a]/40 bg-[#c7a56a]/10 px-4 py-3 text-sm text-[#e2c98f]"><span>🔔 {notification}</span><button onClick={() => setNotification("")} className="text-white/50 hover:text-white">Dismiss</button></div>}
         <div className="mb-6 flex items-end justify-between gap-4"><div><p className="text-xs uppercase tracking-[0.22em] text-[#c7a56a]">Overview</p><h2 className="mt-1 font-[var(--font-cormorant)] text-3xl">Property at a glance</h2></div>{loading && <span className="text-xs text-white/40">Updating…</span>}</div>
         {error && <div className="mb-5 rounded-xl border border-red-400/20 bg-red-400/5 px-4 py-3 text-sm text-red-200">{error}</div>}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
