@@ -13,15 +13,15 @@ export async function GET() {
   const session = await getAdminSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const [rooms] = await db.query(
-    `SELECT r.*, COALESCE(JSON_ARRAYAGG(JSON_OBJECT('id', ri.id, 'image_url', ri.image_url, 'alt_text', ri.alt_text, 'sort_order', ri.sort_order)), JSON_ARRAY()) AS gallery_images
-     FROM rooms r
-     LEFT JOIN room_images ri ON ri.room_id = r.id
-     GROUP BY r.id
-     ORDER BY r.sort_order ASC, r.id ASC`,
-  );
+  const [rooms] = await db.query("SELECT * FROM rooms ORDER BY sort_order ASC, id ASC");
+  const [images] = await db.query("SELECT id, room_id, image_url, alt_text, sort_order FROM room_images ORDER BY room_id ASC, sort_order ASC, id ASC");
+  const imageRows = images as Array<Record<string, unknown>>;
+  const result = (rooms as Array<Record<string, unknown>>).map((room) => ({
+    ...room,
+    gallery_images: imageRows.filter((image) => Number(image.room_id) === Number(room.id)),
+  }));
 
-  return NextResponse.json(rooms);
+  return NextResponse.json(result);
 }
 
 export async function POST(request: Request) {
