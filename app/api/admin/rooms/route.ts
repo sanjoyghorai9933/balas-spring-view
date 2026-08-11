@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { getAdminSession } from "@/lib/adminAuth";
 import { db } from "@/lib/db";
+import { replaceRoomGallery } from "@/lib/roomAdmin";
 
 function jsonArray(value: unknown) {
   if (!Array.isArray(value)) return JSON.stringify([]);
@@ -57,7 +58,7 @@ export async function POST(request: Request) {
     );
 
     const roomId = Number((result as { insertId: number }).insertId);
-    await replaceGallery(roomId, body.gallery_images);
+    await replaceRoomGallery(roomId, body.gallery_images);
     return NextResponse.json({ id: roomId }, { status: 201 });
   } catch (error) {
     console.error("Room create failed:", error);
@@ -65,19 +66,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
-
-async function replaceGallery(roomId: number, value: unknown) {
-  const images = Array.isArray(value) ? value : [];
-  await db.execute("DELETE FROM room_images WHERE room_id = ?", [roomId]);
-  for (const [index, item] of images.entries()) {
-    const image = item as { image_url?: unknown; alt_text?: unknown };
-    const imageUrl = String(image.image_url ?? "").trim();
-    if (!imageUrl) continue;
-    await db.execute(
-      "INSERT INTO room_images (room_id, image_url, alt_text, sort_order) VALUES (?, ?, ?, ?)",
-      [roomId, imageUrl, String(image.alt_text ?? "").trim() || null, index],
-    );
-  }
-}
-
-export { replaceGallery };
