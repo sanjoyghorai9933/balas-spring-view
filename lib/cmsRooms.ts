@@ -48,8 +48,11 @@ function toRoom(row: RoomRow, images: ImageRow[]): Room {
     .sort((a, b) => a.sort_order - b.sort_order)
     .map((image) => ({ src: image.image_url, alt: image.alt_text || row.name }));
 
-  const cover = row.cover_image_url || gallery[0]?.src || fallbackRoomsContent.rooms.find((room) => room.slug === row.slug)?.image.src || "/images/rooms/room1.jpeg";
   const fallback = fallbackRoomsContent.rooms.find((room) => room.slug === row.slug);
+  const cover = row.cover_image_url || gallery[0]?.src || fallback?.image.src || "/images/rooms/room1.jpeg";
+  const occupancy = row.max_children > 0
+    ? `${row.max_adults} Adults + ${row.max_children} Children`
+    : `${row.max_adults} Guests`;
 
   return {
     id: row.slug,
@@ -63,7 +66,7 @@ function toRoom(row: RoomRow, images: ImageRow[]): Room {
     heroImage: { src: cover, alt: `${row.name} at Bala's Spring View` },
     galleryImages: gallery.length ? gallery : [{ src: cover, alt: row.name }],
     size: row.size || fallback?.size || "",
-    occupancy: `${row.max_adults}${row.max_children ? ` + ${row.max_children} children` : ""} Guests`,
+    occupancy,
     bedType: row.bed_type || fallback?.bedType || "",
     amenities: parseAmenities(row.amenities_json),
     priceFrom: Number(row.price_from || 0),
