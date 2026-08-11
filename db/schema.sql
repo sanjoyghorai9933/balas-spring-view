@@ -67,12 +67,15 @@ CREATE TABLE IF NOT EXISTS gallery_images (
   title VARCHAR(180) NULL,
   image_url VARCHAR(1000) NOT NULL,
   alt_text VARCHAR(255) NULL,
+  category VARCHAR(40) NOT NULL DEFAULT 'facilities',
+  aspect VARCHAR(20) NOT NULL DEFAULT 'landscape',
   sort_order INT NOT NULL DEFAULT 0,
   is_active TINYINT(1) NOT NULL DEFAULT 1,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
-  KEY idx_gallery_active_order (is_active, sort_order)
+  KEY idx_gallery_active_order (is_active, sort_order),
+  KEY idx_gallery_category_active_order (category, is_active, sort_order)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS attractions (
