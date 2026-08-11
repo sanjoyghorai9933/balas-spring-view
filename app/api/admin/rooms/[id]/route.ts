@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import { getAdminSession } from "@/lib/adminAuth";
 import { db } from "@/lib/db";
-import { replaceGallery } from "../route";
+import { replaceRoomGallery } from "@/lib/roomAdmin";
 
 export async function PUT(request: Request, context: { params: Promise<{ id: string }> }) {
   const session = await getAdminSession();
@@ -41,7 +41,7 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
       ],
     );
 
-    await replaceGallery(roomId, body.gallery_images);
+    await replaceRoomGallery(roomId, body.gallery_images);
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("Room update failed:", error);
