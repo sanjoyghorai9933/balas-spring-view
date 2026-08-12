@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { galleryContent } from "@/data/gallery";
 import { getAdminSession } from "@/lib/adminAuth";
 import { db } from "@/lib/db";
+import type { RowDataPacket } from "mysql2";
+
+type ExistingRow = RowDataPacket & { id: number };
 
 export async function POST() {
   const session = await getAdminSession();
@@ -9,7 +12,7 @@ export async function POST() {
   try {
     let imported = 0;
     for (const [index, image] of galleryContent.images.entries()) {
-      const [existing] = await db.query<{ id: number }[]>("SELECT id FROM gallery_images WHERE image_url = ? LIMIT 1", [image.src]);
+      const [existing] = await db.query<ExistingRow[]>("SELECT id FROM gallery_images WHERE image_url = ? LIMIT 1", [image.src]);
       if (existing.length) continue;
       await db.execute(
         "INSERT INTO gallery_images (title, image_url, alt_text, category, aspect, sort_order, is_active) VALUES (?, ?, ?, ?, ?, ?, 1)",
