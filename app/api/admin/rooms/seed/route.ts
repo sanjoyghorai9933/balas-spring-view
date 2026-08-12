@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
+import type { ResultSetHeader, RowDataPacket } from "mysql2";
 
 import { roomsContent } from "@/data/rooms";
 import { getAdminSession } from "@/lib/adminAuth";
 import { db } from "@/lib/db";
 import { replaceRoomGallery } from "@/lib/roomAdmin";
+
+type ExistingRoomRow = RowDataPacket & { id: number };
 
 export async function POST() {
   const session = await getAdminSession();
@@ -12,13 +15,13 @@ export async function POST() {
   try {
     let imported = 0;
     for (const [index, room] of roomsContent.rooms.entries()) {
-      const [existing] = await db.query<{ id: number }[]>("SELECT id FROM rooms WHERE slug = ? LIMIT 1", [room.slug]);
+      const [existing] = await db.query<ExistingRoomRow[]>("SELECT id FROM rooms WHERE slug = ? LIMIT 1", [room.slug]);
       let roomId: number;
 
       if (existing.length) {
         roomId = existing[0].id;
       } else {
-        const [result] = await db.execute(
+        const [result] = await db.execute<ResultSetHeader>(
           `INSERT INTO rooms (slug, name, category, subtitle, short_description, description, long_description, size, bed_type, price_from, max_adults, max_children, amenities_json, cover_image_url, sort_order, is_active)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
           [
@@ -39,7 +42,7 @@ export async function POST() {
             index,
           ],
         );
-        roomId = Number((result as { insertId: number }).insertId);
+        roomId = result.insertId;
         imported += 1;
       }
 
