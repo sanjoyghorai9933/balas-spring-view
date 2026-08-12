@@ -9,6 +9,8 @@ html {
   --luxury-cream: #f5f0e8;
   --luxury-gold: #c9a96e;
   --luxury-muted: #8a8f8c;
+  --font-cormorant: Georgia, "Times New Roman", serif;
+  --font-jost: Arial, Helvetica, sans-serif;
 }
 
 @theme inline {
