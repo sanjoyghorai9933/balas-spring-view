@@ -1,8 +1,9 @@
 import { db } from "@/lib/db";
 import { attractionsContent } from "@/data/attractions";
 import AttractionDetailCard from "./AttractionDetailCard";
+import type { RowDataPacket } from "mysql2";
 
-type Row = { id: number; slug: string | null; name: string; description: string | null; distance: string | null; drive_time: string | null; best_time_to_visit: string | null; maps_url: string | null; image_url: string | null };
+type Row = RowDataPacket & { id: number; slug: string | null; name: string; description: string | null; distance: string | null; drive_time: string | null; best_time_to_visit: string | null; maps_url: string | null; image_url: string | null };
 
 type AttractionItem = {
   id: string;
