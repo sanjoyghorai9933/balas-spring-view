@@ -25,6 +25,10 @@ export async function PUT(request: Request, context: Context) {
     return NextResponse.json({ error: "Title and image are required." }, { status: 400 });
   }
 
+  const sortOrder = typeof body.sort_order === "number" && Number.isFinite(body.sort_order) ? body.sort_order : 0;
+  const active = body.is_active === false ? 0 : 1;
+  const idNumber = Number(id);
+
   await db.execute(
     `UPDATE hero_slides SET title = ?, subtitle = ?, image_url = ?, cta_label = ?, cta_href = ?, sort_order = ?, is_active = ? WHERE id = ?`,
     [
@@ -33,9 +37,9 @@ export async function PUT(request: Request, context: Context) {
       body.image_url.trim(),
       body.cta_label?.trim() || null,
       body.cta_href?.trim() || null,
-      Number.isFinite(body.sort_order) ? body.sort_order : 0,
-      body.is_active === false ? 0 : 1,
-      Number(id),
+      sortOrder,
+      active,
+      idNumber,
     ],
   );
 
