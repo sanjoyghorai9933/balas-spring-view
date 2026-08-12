@@ -37,6 +37,7 @@ export default function AdminDashboard({ email }: { email: string }) {
   const [data, setData] = useState<DashboardData>(emptyData);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [warning, setWarning] = useState("");
   const [notification, setNotification] = useState("");
   const previousNewCount = useRef<number | null>(null);
 
@@ -54,6 +55,7 @@ export default function AdminDashboard({ email }: { email: string }) {
       }
       previousNewCount.current = nextNewCount;
       setData(nextData);
+      setWarning(typeof payload.warning === "string" ? payload.warning : "");
       setError("");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not load dashboard.");
@@ -98,6 +100,7 @@ export default function AdminDashboard({ email }: { email: string }) {
         {notification && <div className="mb-5 flex items-center justify-between gap-4 rounded-xl border border-[#c7a56a]/40 bg-[#c7a56a]/10 px-4 py-3 text-sm text-[#e2c98f]"><span>🔔 {notification}</span><button onClick={() => setNotification("")} className="text-white/50 hover:text-white">Dismiss</button></div>}
         <div className="mb-6 flex items-end justify-between gap-4"><div><p className="text-xs uppercase tracking-[0.22em] text-[#c7a56a]">Overview</p><h2 className="mt-1 font-[var(--font-cormorant)] text-3xl">Property at a glance</h2></div>{loading && <span className="text-xs text-white/40">Updating…</span>}</div>
         {error && <div className="mb-5 rounded-xl border border-red-400/20 bg-red-400/5 px-4 py-3 text-sm text-red-200">{error}</div>}
+        {warning && !error && <div className="mb-5 rounded-xl border border-yellow-400/20 bg-yellow-400/5 px-4 py-3 text-sm text-yellow-100">{warning}</div>}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {stats.map((stat) => <Link key={stat.label} href={stat.href} className={`rounded-xl border bg-[#151311] p-5 transition hover:-translate-y-0.5 hover:border-[#c7a56a]/60 ${stat.urgent ? "border-[#c7a56a]/50" : "border-white/10"}`}><div className="flex items-start justify-between gap-3"><p className="text-sm text-white/50">{stat.label}</p>{stat.urgent && <span className="rounded-full bg-[#c7a56a] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#17130d]">New</span>}</div><p className="mt-2 text-3xl font-medium text-[#e2c98f]">{stat.value}</p><p className="mt-1 text-xs text-white/35">{stat.detail}</p></Link>)}
         </div>
