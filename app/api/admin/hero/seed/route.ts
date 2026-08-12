@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
+import { RowDataPacket } from "mysql2";
 
 import { heroContent } from "@/data/hero";
 import { getAdminSession } from "@/lib/adminAuth";
 import { db } from "@/lib/db";
+
+type ExistingRow = RowDataPacket & { id: number };
 
 export async function POST() {
   const session = await getAdminSession();
@@ -12,7 +15,7 @@ export async function POST() {
     let imported = 0;
 
     for (const [index, image] of heroContent.images.entries()) {
-      const [existing] = await db.query<{ id: number }[]>(
+      const [existing] = await db.query<ExistingRow[]>(
         "SELECT id FROM hero_slides WHERE image_url = ? LIMIT 1",
         [image.src],
       );
