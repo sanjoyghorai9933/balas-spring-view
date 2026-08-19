@@ -27,6 +27,14 @@ type RecentEnquiry = RowDataPacket & {
 const emptyCount: CountRow = { total: 0, active: 0 } as CountRow;
 const emptyEnquiries: EnquiryCountRow = { total: 0, new_count: 0, confirmed: 0 } as EnquiryCountRow;
 
+function getErrorCode(reason: unknown): string {
+  if (reason && typeof reason === "object" && "code" in reason) {
+    const code = (reason as { code?: unknown }).code;
+    if (typeof code === "string") return code;
+  }
+  return "UNKNOWN_DB_ERROR";
+}
+
 async function countQuery(sql: string): Promise<CountRow> {
   const [[row]] = await db.query<CountRow[]>(sql);
   return row ?? emptyCount;
@@ -64,10 +72,14 @@ export async function GET() {
   const results = await Promise.allSettled(queries.map(([, query]) => query()));
   const values = results.map((result) => result.status === "fulfilled" ? result.value : null);
   const warnings = results.flatMap((result, index) => result.status === "rejected" ? [queries[index][0]] : []);
+  const errorCodes = results.flatMap((result, index) => result.status === "rejected" ? [{ section: queries[index][0], code: getErrorCode(result.reason) }] : []);
 
   if (warnings.length === queries.length) {
-    console.error("Admin dashboard database connection failed:", results[0].status === "rejected" ? results[0].reason : "Unknown error");
-    return NextResponse.json({ error: "Could not connect to the database. Check the production database connection settings." }, { status: 500 });
+    console.error("Admin dashboard database connection failed:", errorCodes);
+    return NextResponse.json({
+      error: "Could not connect to the database. Check the production database connection settings.",
+      databaseDiagnostics: errorCodes,
+    }, { status: 500 });
   }
 
   const data = {
