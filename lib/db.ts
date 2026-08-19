@@ -6,6 +6,7 @@ const globalForMysql = globalThis as unknown as {
 
 function createPool() {
   const host = process.env.DATABASE_HOST || "localhost";
+  const port = Number(process.env.DATABASE_PORT || 3306);
   const database = process.env.DATABASE_NAME;
   const user = process.env.DATABASE_USER;
   const password = process.env.DATABASE_PASSWORD;
@@ -18,12 +19,14 @@ function createPool() {
 
   return mysql.createPool({
     host,
+    port,
     user,
     password,
     database,
     waitForConnections: true,
     connectionLimit: 5,
     queueLimit: 0,
+    connectTimeout: 10000,
     charset: "utf8mb4",
   });
 }
