@@ -62,27 +62,59 @@ export default function Hero() {
     : fallbackHero;
 
   return (
-    <section id="home" ref={sectionRef} className="relative flex min-h-screen items-center overflow-hidden bg-[#0F1720]">
-      <motion.div aria-hidden="true" style={{ y: bgY }} className="absolute inset-0 -top-[10%] h-[120%] bg-cover bg-center bg-no-repeat">
-        <div className="h-full w-full bg-cover bg-center" style={{ backgroundImage: `url('${hero.backgroundImage}')` }} />
+    <section
+      id="home"
+      ref={sectionRef}
+      className="relative flex min-h-[calc(100svh-5rem)] items-center overflow-hidden bg-[#0F1720] lg:min-h-screen"
+    >
+      <motion.div
+        aria-hidden="true"
+        style={{ y: bgY }}
+        className="absolute inset-0 -top-[5%] h-[110%] bg-cover bg-center bg-no-repeat lg:-top-[10%] lg:h-[120%]"
+      >
+        <div
+          className="h-full w-full bg-cover bg-center"
+          style={{ backgroundImage: `url('${hero.backgroundImage}')` }}
+        />
       </motion.div>
-      <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-b from-[#0F1720]/95 via-[#0F1720]/75 to-[#0F1720]" />
-      <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-r from-[#0F1720] via-[#0F1720]/40 to-transparent lg:via-[#0F1720]/20" />
+      <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-b from-[#0F1720]/90 via-[#0F1720]/65 to-[#0F1720]/95 lg:from-[#0F1720]/95 lg:via-[#0F1720]/75 lg:to-[#0F1720]" />
+      <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-r from-[#0F1720]/90 via-[#0F1720]/45 to-transparent lg:from-[#0F1720] lg:via-[#0F1720]/40 lg:to-transparent" />
 
-      <div className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-16 px-6 pt-32 pb-24 sm:px-10 lg:grid-cols-2 lg:gap-10 lg:pt-40 lg:pb-16">
-        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col items-center text-center lg:items-start lg:text-left">
-          <motion.p variants={itemVariants} className="font-body text-[11px] font-medium uppercase tracking-[0.4em] text-[#C9A24A] sm:text-xs">{hero.eyebrow}</motion.p>
-          <motion.h1 variants={itemVariants} className="mt-5 font-display text-5xl font-light leading-[1.1] tracking-[0.02em] text-[#F8F8F5] sm:mt-6 sm:text-6xl md:text-7xl lg:text-[5.5rem]">{hero.title}</motion.h1>
-          <motion.div variants={itemVariants} aria-hidden="true" className="my-6 h-px w-16 bg-[#C9A24A]/70 sm:my-7 sm:w-20" />
-          <motion.p variants={itemVariants} className="font-body text-xs font-medium uppercase tracking-[0.4em] text-[#C9A24A] sm:text-sm">{hero.brandLine}</motion.p>
-          <motion.p variants={itemVariants} className="mt-6 font-display text-xl font-light italic tracking-wide text-[#F8F8F5] sm:mt-7 sm:text-2xl md:text-3xl">&ldquo;{hero.tagline}&rdquo;</motion.p>
-          <motion.p variants={itemVariants} className="mt-6 max-w-xl font-body text-sm font-light leading-relaxed text-[#F8F8F5]/70 sm:mt-7 sm:text-base md:text-lg">{hero.description}</motion.p>
-          <motion.div variants={itemVariants} className="mt-10 flex w-full flex-col items-center justify-center gap-4 sm:mt-11 sm:w-auto sm:flex-row sm:justify-start sm:gap-5">
+      <div className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-10 px-5 pt-24 pb-16 sm:gap-12 sm:px-6 sm:pt-28 sm:pb-20 lg:grid-cols-2 lg:gap-10 lg:px-10 lg:pt-40 lg:pb-16">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="flex flex-col items-center text-center lg:items-start lg:text-left"
+        >
+          <motion.p variants={itemVariants} className="font-body text-[11px] font-medium uppercase tracking-[0.4em] text-[#C9A24A] sm:text-xs">
+            {hero.eyebrow}
+          </motion.p>
+          <motion.h1 variants={itemVariants} className="mt-5 max-w-3xl font-display text-4xl font-light leading-[1.1] tracking-[0.02em] text-[#F8F8F5] sm:mt-6 sm:text-5xl md:text-6xl lg:text-[5.5rem]">
+            {hero.title}
+          </motion.h1>
+          <motion.div variants={itemVariants} aria-hidden="true" className="my-5 h-px w-16 bg-[#C9A24A]/70 sm:my-7 sm:w-20" />
+          <motion.p variants={itemVariants} className="font-body text-[11px] font-medium uppercase tracking-[0.4em] text-[#C9A24A] sm:text-xs md:text-sm">
+            {hero.brandLine}
+          </motion.p>
+          <motion.p variants={itemVariants} className="mt-5 max-w-2xl font-display text-lg font-light italic tracking-wide text-[#F8F8F5] sm:mt-7 sm:text-2xl md:text-3xl">
+            &ldquo;{hero.tagline}&rdquo;
+          </motion.p>
+          <motion.p variants={itemVariants} className="mt-5 max-w-xl font-body text-sm font-light leading-relaxed text-[#F8F8F5]/80 sm:mt-7 sm:text-base md:text-lg">
+            {hero.description}
+          </motion.p>
+          <motion.div variants={itemVariants} className="mt-8 flex w-full flex-col items-center justify-center gap-3 sm:mt-11 sm:w-auto sm:flex-row sm:justify-start sm:gap-5">
             <HeroButton href={hero.primaryCta.href} label={hero.primaryCta.label} variant="primary" />
             <HeroButton href={hero.secondaryCta.href} label={hero.secondaryCta.label} variant="secondary" />
           </motion.div>
         </motion.div>
-        <HeroImage images={hero.images} />
+
+        {/* The desktop hero image remains in the two-column layout. On mobile the
+            same imagery is already used as the full-bleed hero background, so
+            hiding this second carousel prevents the hero from becoming twice as tall. */}
+        <div className="hidden lg:block">
+          <HeroImage images={hero.images} />
+        </div>
       </div>
       <ScrollIndicator />
     </section>
