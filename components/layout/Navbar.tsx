@@ -52,16 +52,15 @@ export default function Navbar() {
   return (
     <header
       className={cn(
-        // Mobile/tablet: absolute so the navbar scrolls away with the hero
-        // instead of staying over the page content.
-        // Desktop: keep the existing fixed navigation behaviour.
-        "absolute inset-x-0 top-0 z-50 w-full transition-all duration-500 xl:fixed xl:inset-x-0 xl:top-0",
+        // Keep the navigation fixed on every screen size so it remains
+        // visible while the visitor scrolls the website.
+        "fixed inset-x-0 top-0 z-[100] w-full transition-all duration-500",
         scrolled
-          ? "border-b border-[#F8F8F5]/5 bg-[#0F1720]/90 backdrop-blur-md xl:bg-[#0F1720]/90"
+          ? "border-b border-[#F8F8F5]/10 bg-[#0F1720]/95 shadow-lg backdrop-blur-md"
           : "bg-[#0F1720]/95 xl:bg-transparent",
       )}
     >
-      <nav className="relative mx-auto flex h-20 max-w-[1600px] items-center justify-between px-5 sm:px-6 lg:h-28 lg:px-10 xl:h-28">
+      <nav className="relative mx-auto flex h-16 max-w-[1600px] items-center justify-between px-4 sm:h-20 sm:px-6 lg:h-28 lg:px-10">
         <NavbarLogo />
 
         <ul className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-8 xl:flex">
@@ -95,9 +94,9 @@ export default function Navbar() {
 
       <div
         className={cn(
-          "absolute left-0 right-0 top-full max-h-[calc(100dvh-5rem)] overflow-x-hidden overflow-y-auto overscroll-contain border-t border-[#F8F8F5]/5 bg-[#0F1720]/95 backdrop-blur-md transition-all duration-500 xl:hidden",
+          "absolute left-0 right-0 top-full max-h-[calc(100dvh-4rem)] overflow-x-hidden overflow-y-auto overscroll-contain border-t border-[#F8F8F5]/5 bg-[#0F1720]/95 backdrop-blur-md transition-all duration-500 sm:max-h-[calc(100dvh-5rem)] xl:hidden",
           mobileOpen
-            ? "max-h-[calc(100dvh-5rem)] opacity-100"
+            ? "max-h-[calc(100dvh-4rem)] opacity-100 sm:max-h-[calc(100dvh-5rem)]"
             : "pointer-events-none max-h-0 opacity-0",
         )}
       >
