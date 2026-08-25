@@ -59,7 +59,7 @@ export default function Navbar() {
         scrolled
           ? "border-b border-[#F8F8F5]/5 bg-[#0F1720]/85 backdrop-blur-md"
           : "bg-transparent",
-      )
+      )}
     >
       <nav className="relative mx-auto flex h-20 max-w-[1600px] items-center justify-between px-5 sm:h-24 sm:px-6 lg:h-28 lg:px-10">
         <NavbarLogo />
