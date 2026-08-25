@@ -52,13 +52,13 @@ export default function Navbar() {
   return (
     <header
       className={cn(
-        // On phones the navbar stays in normal document flow while sticky,
-        // so page content is never hidden underneath the navigation.
-        // Desktop keeps the existing fixed navigation behaviour.
-        "sticky top-0 z-50 transition-all duration-500 xl:fixed xl:inset-x-0 xl:top-0",
+        // Mobile/tablet: absolute so the navbar scrolls away with the hero
+        // instead of staying over the page content.
+        // Desktop: keep the existing fixed navigation behaviour.
+        "absolute inset-x-0 top-0 z-50 w-full transition-all duration-500 xl:fixed xl:inset-x-0 xl:top-0",
         scrolled
-          ? "border-b border-[#F8F8F5]/5 bg-[#0F1720]/90 backdrop-blur-md"
-          : "bg-[#0F1720] xl:bg-transparent",
+          ? "border-b border-[#F8F8F5]/5 bg-[#0F1720]/90 backdrop-blur-md xl:bg-[#0F1720]/90"
+          : "bg-[#0F1720]/95 xl:bg-transparent",
       )}
     >
       <nav className="relative mx-auto flex h-20 max-w-[1600px] items-center justify-between px-5 sm:px-6 lg:h-28 lg:px-10 xl:h-28">
@@ -95,8 +95,10 @@ export default function Navbar() {
 
       <div
         className={cn(
-          "max-h-[calc(100dvh-5rem)] overflow-x-hidden overflow-y-auto overscroll-contain border-t border-[#F8F8F5]/5 bg-[#0F1720]/95 backdrop-blur-md transition-all duration-500 xl:hidden",
-          mobileOpen ? "max-h-[calc(100dvh-5rem)] opacity-100" : "max-h-0 opacity-0",
+          "absolute left-0 right-0 top-full max-h-[calc(100dvh-5rem)] overflow-x-hidden overflow-y-auto overscroll-contain border-t border-[#F8F8F5]/5 bg-[#0F1720]/95 backdrop-blur-md transition-all duration-500 xl:hidden",
+          mobileOpen
+            ? "max-h-[calc(100dvh-5rem)] opacity-100"
+            : "pointer-events-none max-h-0 opacity-0",
         )}
       >
         <ul className="flex flex-col gap-6 px-5 py-7 sm:px-6 sm:py-8">
