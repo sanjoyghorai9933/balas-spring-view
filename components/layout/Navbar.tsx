@@ -52,13 +52,16 @@ export default function Navbar() {
   return (
     <header
       className={cn(
-        "fixed inset-x-0 top-0 z-50 transition-all duration-500",
+        // Mobile/tablet: sticky so the navbar keeps its own layout space and
+        // cannot overlap the hero/content while scrolling. Desktop keeps the
+        // existing overlay behavior.
+        "sticky top-0 z-50 w-full transition-all duration-500 xl:fixed xl:inset-x-0 xl:top-0",
         scrolled
           ? "border-b border-[#F8F8F5]/5 bg-[#0F1720]/85 backdrop-blur-md"
           : "bg-transparent",
-      )}
+      )
     >
-      <nav className="relative mx-auto flex h-24 max-w-[1600px] items-center justify-between px-6 lg:h-28 lg:px-10">
+      <nav className="relative mx-auto flex h-20 max-w-[1600px] items-center justify-between px-5 sm:h-24 sm:px-6 lg:h-28 lg:px-10">
         <NavbarLogo />
 
         <ul className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-8 xl:flex">
@@ -88,11 +91,11 @@ export default function Navbar() {
 
       <div
         className={cn(
-          "max-h-[calc(100dvh-6rem)] overflow-x-hidden overflow-y-auto overscroll-contain border-t border-[#F8F8F5]/5 bg-[#0F1720]/95 backdrop-blur-md transition-all duration-500 xl:hidden",
+          "max-h-[calc(100dvh-5rem)] overflow-x-hidden overflow-y-auto overscroll-contain border-t border-[#F8F8F5]/5 bg-[#0F1720]/95 backdrop-blur-md transition-all duration-500 sm:max-h-[calc(100dvh-6rem)] xl:hidden",
           mobileOpen ? "opacity-100" : "max-h-0 opacity-0",
         )}
       >
-        <ul className="flex flex-col gap-6 px-6 py-8">
+        <ul className="flex flex-col gap-6 px-5 py-7 sm:px-6 sm:py-8">
           {NAV_LINKS.map((link) => (
             <li key={link.href}>
               <NavLink
