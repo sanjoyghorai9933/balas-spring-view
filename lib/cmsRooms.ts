@@ -79,7 +79,11 @@ export async function getRoomsFromDatabase(): Promise<Room[]> {
     const [rows] = await db.query<RoomRow[]>(
       "SELECT id, slug, name, category, subtitle, short_description, description, long_description, size, bed_type, price_from, max_adults, max_children, amenities_json, cover_image_url, sort_order, is_active FROM rooms WHERE is_active = 1 ORDER BY sort_order ASC, id ASC",
     );
-    if (!rows.length) return fallbackRoomsContent.rooms;
+
+    // An empty CMS result is a valid result. Do not replace it with the old
+    // static room list, otherwise deleting all rooms in the admin will appear
+    // to have no effect on the public website.
+    if (!rows.length) return [];
 
     const [images] = await db.query<ImageRow[]>(
       "SELECT room_id, image_url, alt_text, sort_order FROM room_images ORDER BY room_id ASC, sort_order ASC, id ASC",
