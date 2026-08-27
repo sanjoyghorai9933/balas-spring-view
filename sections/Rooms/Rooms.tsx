@@ -1,9 +1,11 @@
 "use client";
 
 import { motion, type Variants } from "framer-motion";
+import { useEffect, useState } from "react";
 
 import RoomCard from "@/components/rooms/RoomCard";
-import { roomsContent } from "@/data/rooms";
+import { roomsContent as fallbackRoomsContent } from "@/data/rooms";
+import type { RoomsContent } from "@/types/rooms";
 
 const containerVariants: Variants = {
   hidden: {},
@@ -31,6 +33,36 @@ const fadeUp: Variants = {
 };
 
 export default function Rooms() {
+  const [content, setContent] = useState<RoomsContent | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadRooms = async () => {
+      try {
+        const response = await fetch("/api/content/rooms", {
+          cache: "no-store",
+          headers: { "Cache-Control": "no-cache" },
+        });
+
+        if (!response.ok) throw new Error(`Rooms API returned ${response.status}`);
+
+        const data = (await response.json()) as RoomsContent;
+        if (!cancelled) setContent(data);
+      } catch (error) {
+        console.error("Failed to load live rooms; using static fallback.", error);
+        if (!cancelled) setContent(fallbackRoomsContent);
+      }
+    };
+
+    loadRooms();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const roomsContent = content ?? fallbackRoomsContent;
+
   return (
     <section
       id="rooms"
@@ -82,9 +114,19 @@ export default function Rooms() {
           variants={containerVariants}
           className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:mt-20 lg:grid-cols-3 lg:gap-8"
         >
-          {roomsContent.rooms.map((room) => (
-            <RoomCard key={room.id} room={room} variants={cardVariants} />
-          ))}
+          {content === null ? (
+            <div className="col-span-full py-8 text-center font-body text-sm text-[#F8F8F5]/50">
+              Loading rooms…
+            </div>
+          ) : roomsContent.rooms.length > 0 ? (
+            roomsContent.rooms.map((room) => (
+              <RoomCard key={room.id} room={room} variants={cardVariants} />
+            ))
+          ) : (
+            <div className="col-span-full py-8 text-center font-body text-sm text-[#F8F8F5]/50">
+              No rooms are currently available.
+            </div>
+          )}
         </motion.div>
 
         <motion.div
