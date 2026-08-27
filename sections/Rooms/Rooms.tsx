@@ -4,7 +4,6 @@ import { motion, type Variants } from "framer-motion";
 import { useEffect, useState } from "react";
 
 import RoomCard from "@/components/rooms/RoomCard";
-import { roomsContent as fallbackRoomsContent } from "@/data/rooms";
 import type { RoomsContent } from "@/types/rooms";
 
 const containerVariants: Variants = {
@@ -32,8 +31,20 @@ const fadeUp: Variants = {
   },
 };
 
+const emptyRoomsContent: RoomsContent = {
+  eyebrow: "",
+  heading: "Rooms",
+  subtitle: "",
+  rooms: [],
+  viewAllCta: {
+    label: "View All Rooms",
+    href: "/rooms",
+  },
+};
+
 export default function Rooms() {
   const [content, setContent] = useState<RoomsContent | null>(null);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -42,26 +53,42 @@ export default function Rooms() {
       try {
         const response = await fetch("/api/content/rooms", {
           cache: "no-store",
-          headers: { "Cache-Control": "no-cache" },
+          headers: {
+            "Cache-Control": "no-cache, no-store, max-age=0",
+          },
         });
 
-        if (!response.ok) throw new Error(`Rooms API returned ${response.status}`);
+        if (!response.ok) {
+          throw new Error(`Rooms API returned ${response.status}`);
+        }
 
         const data = (await response.json()) as RoomsContent;
-        if (!cancelled) setContent(data);
+
+        if (!cancelled) {
+          setLoadError(false);
+          setContent(data);
+        }
       } catch (error) {
-        console.error("Failed to load live rooms; using static fallback.", error);
-        if (!cancelled) setContent(fallbackRoomsContent);
+        console.error("Failed to load live rooms.", error);
+
+        if (!cancelled) {
+          setLoadError(true);
+          // Never fall back to the old static room data. If the CMS/API is
+          // unavailable, showing old rooms would make deleted/updated rooms
+          // appear to still exist.
+          setContent(emptyRoomsContent);
+        }
       }
     };
 
     loadRooms();
+
     return () => {
       cancelled = true;
     };
   }, []);
 
-  const roomsContent = content ?? fallbackRoomsContent;
+  const roomsContent = content ?? emptyRoomsContent;
 
   return (
     <section
@@ -124,7 +151,9 @@ export default function Rooms() {
             ))
           ) : (
             <div className="col-span-full py-8 text-center font-body text-sm text-[#F8F8F5]/50">
-              No rooms are currently available.
+              {loadError
+                ? "Rooms are temporarily unavailable. Please try again shortly."
+                : "No rooms are currently available."}
             </div>
           )}
         </motion.div>
